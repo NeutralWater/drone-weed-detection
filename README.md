@@ -1,4 +1,4 @@
-# Drone Weed Detection 🌱
+# Drone Weed Detection 
 
 A Python and OpenCV computer-vision prototype that detects green vegetation-like regions from a live webcam feed.
 
@@ -48,4 +48,4 @@ A future version could use a machine-learning model trained on labeled crop and 
 Install dependencies:
 
 ```bash
-pip install opencv-python numpy pillow
+python -m pip install opencv-python numpy pillow
