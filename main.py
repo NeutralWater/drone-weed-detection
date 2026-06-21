@@ -23,7 +23,6 @@ def on_mouse(event, x, y, flags, param):
 cv2.namedWindow("Drone Vision")
 cv2.namedWindow("Green Detection")
 
-# MB1 works in either window
 cv2.setMouseCallback("Drone Vision", on_mouse)
 cv2.setMouseCallback("Green Detection", on_mouse)
 
@@ -45,6 +44,30 @@ while True:
 
     mask = cv2.inRange(hsv, lower_green, upper_green)
     result = cv2.bitwise_and(frame, frame, mask=mask)
+
+    contours, _ = cv2.findContours(
+        mask,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    for contour in contours:
+        area = cv2.contourArea(contour)
+
+        if area > 500:
+            x, y, w, h = cv2.boundingRect(contour)
+
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            cv2.putText(
+                frame,
+                "Weed?",
+                (x, y - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                (0, 255, 0),
+                2
+            )
 
     cv2.putText(
         frame,
