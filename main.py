@@ -43,6 +43,12 @@ while True:
     upper_green = np.array([85, 255, 255])
 
     mask = cv2.inRange(hsv, lower_green, upper_green)
+
+    # Fill small gaps in green regions so uneven leaves/patches connect better
+    kernel = np.ones((5, 5), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    mask = cv2.dilate(mask, kernel, iterations=1)
+
     result = cv2.bitwise_and(frame, frame, mask=mask)
 
     contours, _ = cv2.findContours(
@@ -61,7 +67,7 @@ while True:
 
             cv2.putText(
                 frame,
-                "Weed?",
+                "Green Target",
                 (x, y - 10),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.6,
