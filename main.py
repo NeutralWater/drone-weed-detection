@@ -44,12 +44,17 @@ while True:
 
     mask = cv2.inRange(hsv, lower_green, upper_green)
 
-    # Fill small gaps in green regions so uneven leaves/patches connect better
+    # Connect nearby green pixels and fill small gaps
     kernel = np.ones((5, 5), np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     mask = cv2.dilate(mask, kernel, iterations=1)
 
     result = cv2.bitwise_and(frame, frame, mask=mask)
+
+    # Calculate how much of the camera frame is green
+    green_pixels = cv2.countNonZero(mask)
+    total_pixels = frame.shape[0] * frame.shape[1]
+    green_percent = (green_pixels / total_pixels) * 100
 
     contours, _ = cv2.findContours(
         mask,
@@ -67,7 +72,7 @@ while True:
 
             cv2.putText(
                 frame,
-                "Green Target",
+                f"Green Target: {int(area)}",
                 (x, y - 10),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.6,
@@ -84,6 +89,16 @@ while True:
         (255, 0, 0),
         2
     )
+
+    cv2.putText(
+    frame,
+    f"Green Coverage: {green_percent:.1f}%",
+    (10, 65),
+    cv2.FONT_HERSHEY_SIMPLEX,
+    0.7,
+    (255, 255, 255),
+    2
+)
 
     cv2.imshow("Drone Vision", frame)
     cv2.imshow("Green Detection", result)
